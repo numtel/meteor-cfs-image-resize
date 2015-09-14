@@ -1,0 +1,7 @@
+{
+  "dependencies": {
+    "data-uri-to-buffer": {
+      "version": "0.0.4"
+    }
+  }
+}
