@@ -53,6 +53,12 @@ Option | Description
 `format` | Format of output image, optional, default same as input, accepts `image/png` or `image/jpeg`
 `quality` | Output image quality number 0-100, only used with JPEG images, optional
 
+## Performance
+
+Although images are resized in a separate process to prevent the event loop from being blocked, large images will take significant time to resize due to the JavaScript implementation of the image encoders and decoders.
+
+For high load situations where more capacity is needed, look into using GraphicsMagick using the [`cfs:graphicsmagick` Package](https://github.com/CollectionFS/Meteor-cfs-graphicsmagick).
+
 ## Running Tests
 
 Use the standard command:

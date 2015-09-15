@@ -7,14 +7,19 @@ Package.describe({
 });
 
 Npm.depends({
-  'jimp': '0.2.5'
+  'jimp': '0.2.5',
+  'pkgdir': '0.0.2'
 });
 
 Package.onUse(function(api) {
   api.versionsFrom('1.1.0.3');
-  api.use('underscore', 'server');
+  api.use([
+    'underscore',
+    'random'
+  ], 'server');
   api.addFiles('client.js', 'client');
   api.addFiles('server.js', 'server');
+  api.addFiles('worker.js', 'server', { isAsset: true });
   api.export('resizeImageStream');
 });
 

@@ -1,9 +1,16 @@
 // cfs-image-resize
 // MIT License ben@latenightsketches.com
 
-var Jimp = Npm.require('jimp');
+// Prepare background worker process
+var pkgdir = Npm.require('pkgdir');
+var fork = Npm.require('child_process').fork;
+var path = Npm.require('path');
+var fs = Npm.require('fs');
 
-// TODO: perform Jimp in background process!
+var workerCode = Assets.getText('worker.js');
+var workerFile =
+  path.join(process.cwd(), 'imageResizeWorker.' + Random.id() + '.js');
+fs.writeFileSync(workerFile, workerCode);
 
 /*
 Exported method for generating a CollectionFS transformWrite function
@@ -17,31 +24,17 @@ resizeImageStream = function(options) {
   return function(fileObj, readStream, writeStream) {
     // readStream comes as one chunk
     readStream.on('readable', Meteor.bindEnvironment(function() {
-      var format = options.format || fileObj.original.type;
       var input = readStream.read();
 
-      new Jimp(input, function(error, image) {
-        if(error) throw error;
+      options.format = options.format || fileObj.original.type;
 
-        // Crop image to same ratio as output
-        var ratio  = Math.min(
-          image.bitmap.width / options.width,
-          image.bitmap.height / options.height);
-        var offsetX = (image.bitmap.width - (options.width * ratio)) / 2;
-        var offsetY = (image.bitmap.height - (options.height * ratio)) / 2;  
-        image.crop(offsetX, offsetY,
-          image.bitmap.width - (offsetX * 2),
-          image.bitmap.height - (offsetY * 2)
-        );
-        image.resize(options.width, options.height);
-        if(format === 'image/jpeg' && typeof options.quality === 'number') {
-          image.quality(options.quality);
-        }
+      var worker = fork(workerFile, [ pkgdir, JSON.stringify(options) ]);
 
-        image.getBuffer(format, function(error, output) {
-          if(error) throw error;
-          writeStream.end(output);
-        });
+      worker.send(input);
+
+      worker.on('message', function(output) {
+        writeStream.end(new Buffer(output));
+        worker.kill();
       });
     }));
   }
