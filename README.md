@@ -1,6 +1,6 @@
 # numtel:cfs-image-resize
 
-Resize images in [CollectionFS](https://github.com/CollectionFS/Meteor-CollectionFS) using PhantomJS instead of GraphicsMagick.
+Resize images for thumbnails in [CollectionFS](https://github.com/CollectionFS/Meteor-CollectionFS) using [`Jimp`](https://github.com/oliver-moran/jimp)
 
 ## Installation
 
@@ -16,9 +16,7 @@ meteor add numtel:cfs-image-resize
 
 A `resizeImageStream` function is exposed when this package is installed. Call this function with options for resizing.
 
-Output images will be in the same format as the input images. Only PNG, JPEG are supported due to the usage of `canvas.toDataURL()`.
-
-JPEG thumbnails are recommended due to the enormous size of generated PNG files. This is a result of the embedded browser and beyond the scope of this project. See the expected PNG output files in the `test` directory.
+Only `image/png` and `image/jpeg` file types are supported.
 
 Images will be centered if the aspect ratio between the input and the output differs.
 
@@ -39,7 +37,7 @@ Images = new FS.Collection("images", {
         width: 100,
         height: 50,
         format: 'image/jpeg',
-        quality: 0.5
+        quality: 50
       })
     })
   ],
@@ -53,28 +51,11 @@ Option | Description
 `width` | Output width in pixels, required
 `height` | Output height in pixels, required
 `format` | Format of output image, optional, default same as input, accepts `image/png` or `image/jpeg`
-`quality` | Output image quality number 0-1, only used with JPEG images, optional
-
-## Exit PhantomJS on hot code push
-
-This package runs a persistent PhantomJS process in the background to process requestsso that no time is wasted spawning new processes. Because of this, hot code pushes will result in multiple instances of PhantomJS running unless the current instance is explicitly closed on exit. The following code may be placed in your application's server code to perform this action.
-
-```javascript
-var closeAndExit = function() {
-  // Exit PhantomJS server process
-  resizeImageStream.phantomProcess.kill();
-  process.exit();
-};
-
-// Close PhantomJS on hot code push
-process.on('SIGTERM', closeAndExit);
-// Close PhantomJS on exit (ctrl + c)
-process.on('SIGINT', closeAndExit);
-```
+`quality` | Output image quality number 0-100, only used with JPEG images, optional
 
 ## Running Tests
 
-The test suite compares generated JPEG and PNG images against expected outputs. A test case with multiple simultaneous conversion requests is also performed.
+Use the standard command:
 
 ```
 meteor test-packages ./
