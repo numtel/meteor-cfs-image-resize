@@ -6,8 +6,6 @@ Resize images for thumbnails in [CollectionFS](https://github.com/CollectionFS/M
 
 This package assumes you're using [CollectionFS](https://github.com/CollectionFS/Meteor-CollectionFS).
 
-**This package is still under construction and not yet available on Atmosphere!**
-
 ```
 meteor add numtel:cfs-image-resize
 ```
