@@ -22,9 +22,17 @@ Exported method for generating a CollectionFS transformWrite function
 */
 resizeImageStream = function(options) {
   return function(fileObj, readStream, writeStream) {
-    // readStream comes as one chunk
-    readStream.on('readable', Meteor.bindEnvironment(function() {
-      var input = readStream.read();
+    var chunks = [];
+
+    readStream.on('readable', function() {
+      // Save each incoming chunk of the read stream
+      var chunk = readStream.read();
+      chunks.push(chunk);
+    });
+
+    readStream.on('end', Meteor.bindEnvironment(function() {
+      // Concatenate all of the chunks together to get the full input buffer
+      var input = Buffer.concat(chunks);
 
       options.format = options.format || fileObj.original.type;
 
