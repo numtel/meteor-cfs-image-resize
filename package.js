@@ -1,13 +1,13 @@
 Package.describe({
   name: 'numtel:cfs-image-resize',
-  version: '0.0.1',
+  version: '0.0.3',
   summary: 'Resize images in CollectionFS using Jimp',
   git: 'https://github.com/numtel/meteor-cfs-image-resize.git',
   documentation: 'README.md'
 });
 
 Npm.depends({
-  'jimp': '0.2.5',
+  'jimp': '0.2.21',
   'pkgdir': '0.0.2'
 });
 
