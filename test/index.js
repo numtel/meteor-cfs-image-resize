@@ -3,9 +3,6 @@
 
 var PREFIX = 'numtel:cfs-image-resize - ';
 var ASSET_DIR = 'assets/packages/local-test_numtel_cfs-image-resize/';
-var READ_STREAM_OPTS = {
-  highWaterMark: 10 * 1024 * 1024 // 10MB chunk size, larger than input file
-}
 
 var MBE = Meteor.bindEnvironment;
 var fs = Npm.require('fs');
@@ -76,7 +73,7 @@ Object.keys(MATRIX).forEach(function(testName) {
     var paths = testSettings.paths.call(testSettings, options);
     Tinytest.addAsync(PREFIX + testName + ' ' + paths.file,
       function (test, done) {
-        var readStream = fs.createReadStream(paths.input, READ_STREAM_OPTS);
+        var readStream = fs.createReadStream(paths.input);
         var writeStream = fs.createWriteStream(paths.output);
         var resizer = resizeImageStream(options);
 
