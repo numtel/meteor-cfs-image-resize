@@ -27,7 +27,9 @@ resizeImageStream = function(options) {
     readStream.on('readable', function() {
       // Save each incoming chunk of the read stream
       var chunk = readStream.read();
-      chunks.push(chunk);
+      if (chunk) {
+        chunks.push(chunk);
+      }
     });
 
     readStream.on('end', Meteor.bindEnvironment(function() {
